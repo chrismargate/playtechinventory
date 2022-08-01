@@ -1,0 +1,439 @@
+﻿<Window x:Class="PlayTechInventory.Dashboard"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
+        xmlns:av="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="av" 
+        xmlns:local="clr-namespace:PlayTechInventory"
+        Title="Dashboard" Height="720" Width="1080" WindowStartupLocation="CenterScreen" AllowsTransparency="True"
+        Background="Transparent" WindowStyle="None">
+
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis" />
+    </Window.Resources>
+
+    <Border CornerRadius="30" Background="#141E36" MouseDown="Border_MouseDown" MouseLeftButtonDown="Border_MouseLeftButtonDown">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="218"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <!--Left Menu-->
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!--Menu Icon-->
+                <Button Style="{StaticResource topButton}" HorizontalAlignment="Left" Margin="20 28 0 35">
+                    <Icon:PackIconMaterial Kind="Menu" Width="15" Height="15" />
+                </Button>
+
+                <Border Grid.Row="1" Background="#2E3349" CornerRadius="0 50 0 30">
+                    <DockPanel>
+                        <!--Menu Logo-->
+                        <Border Width="80" Height="80" Padding="3" CornerRadius="100" DockPanel.Dock="Top" HorizontalAlignment="Left" Margin="20 -30 0 0">
+                            <Ellipse Margin="52,42,-52,-42">
+                                <Ellipse.Fill>
+                                    <ImageBrush ImageSource="Images/p1.jpg"/>
+                                </Ellipse.Fill>
+                            </Ellipse>
+                        </Border>
+
+                        <!--Menu Titles-->
+                        <TextBlock x:Name="loggedInUser" Text="User" Foreground="White" FontSize="22" FontWeight="SemiBold" DockPanel.Dock="Top" Margin="0 40 0 10" TextAlignment="Center"/>
+                        <TextBlock Text="Admin" Foreground="#D0BFFF" FontSize="14" FontWeight="SemiBold" DockPanel.Dock="Top" TextAlignment="Center"/>
+
+                        <!--Menu Seprator-->
+                        <Separator Margin="25" Background="#7E5FDC" DockPanel.Dock="Top" Height="0.8"/>
+
+                        <!--Menu Buttons-->
+                        <StackPanel DockPanel.Dock="Top" >
+                            <Button x:Name="btnItems" Style="{StaticResource menuButton}" Click="btnItems_Click">
+                                <StackPanel Orientation="Horizontal">
+                                    <Icon:PackIconMaterial Kind="HomeVariant" Style="{StaticResource menuButtonIcon}"/>
+                                    <TextBlock Text="Items"/>
+                                </StackPanel>
+                            </Button>
+
+                            <Button x:Name="btnLedger" Style="{StaticResource menuButton}" Click="btnLedger_Click">
+                                <StackPanel Orientation="Horizontal">
+                                    <Icon:PackIconMaterial Kind="CalendarClock" Style="{StaticResource menuButtonIcon}"/>
+                                    <TextBlock Text="Ledger"/>
+                                </StackPanel>
+                            </Button>
+
+                            <Button x:Name="btnSuppliers" Style="{StaticResource menuButton}" Click="btnSuppliers_Click">
+                                <StackPanel Orientation="Horizontal">
+                                    <Icon:PackIconMaterial Kind="AccountMultipleOutline" Style="{StaticResource menuButtonIcon}"/>
+                                    <TextBlock Text="Suppliers"/>
+                                </StackPanel>
+                            </Button>
+
+                            <Button x:Name="btnCustomers" Style="{StaticResource menuButton}" Click="btnCustomers_Click">
+                                <StackPanel Orientation="Horizontal">
+                                    <Icon:PackIconMaterial Kind="CashMultiple" Style="{StaticResource menuButtonIcon}"/>
+                                    <TextBlock Text="Customers"/>
+                                </StackPanel>
+                            </Button>
+
+                        </StackPanel>
+
+                        <Button Click="btnLogout_Click" Style="{StaticResource menuButton}" VerticalAlignment="Bottom" DockPanel.Dock="Bottom" Margin="15 0 15 20">
+                            <StackPanel Orientation="Horizontal">
+                                <Icon:PackIconMaterial Kind="Logout" Style="{StaticResource menuButtonIcon}"/>
+                                <TextBlock Text="Logout"/>
+                            </StackPanel>
+                        </Button>
+
+                    </DockPanel>
+                </Border>
+
+            </Grid>
+
+            <!--Items Data Grid-->
+            <Grid Name="gridItems" Visibility="Hidden" Grid.Column="1" Margin="30,20,20,20">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
+
+                <!--Top Buttons-->
+                <!--<Button Style="{StaticResource topButton}" Margin="0 0 20 0" Background="#dcdcdc">
+                    <Icon:PackIconMaterial Kind="Cog"/>
+                </Button>-->
+
+                <!--<Button Style="{StaticResource topButton}" Margin="0 0 55 0">
+                    <Icon:PackIconMaterial Kind="Bell"/>
+                </Button>-->
+
+                <!--Page Title-->
+                <TextBlock Text="Items" Grid.Row="1" FontSize="32" FontWeight="SemiBold" Margin="0 20 0 0" Foreground="#dcdcdc" HorizontalAlignment="Left"/>
+
+                <!--Add Button
+                <Button x:Name="btnAdd" Style="{StaticResource addButton}" Click="btnAdd_Click" Margin="0,24,0,4" Grid.Row="1" HorizontalAlignment="Center">
+                    <StackPanel Orientation="Horizontal">
+                        <Icon:PackIconMaterial Kind="Plus" VerticalAlignment="Center" Margin="0 1 8 0" Width="11" Height="11"/>
+                        <TextBlock Text="Add"/>
+                    </StackPanel>
+                </Button>-->
+
+                <!--Refresh Button-->
+                <Button Style="{StaticResource addButton}" Name="btnItemRefresh" Click="btnItemRefresh_Click" Margin="0,24,164,4" Grid.Row="1">
+                    <StackPanel Orientation="Horizontal">
+                        <Icon:PackIconMaterial Kind="Refresh" VerticalAlignment="Center" Margin="0 1 8 0" Width="11" Height="11"/>
+                        <TextBlock Text="Refresh"/>
+                    </StackPanel>
+                </Button>
+
+                <!--Delete Button
+                <Button Style="{StaticResource addButton}" Click="btnDelete_Click">
+                    <StackPanel Orientation="Horizontal">
+                        <Icon:PackIconMaterial Kind="Plus" VerticalAlignment="Center" Margin="0 1 8 0" Width="11" Height="11"/>
+                        <TextBlock Text="Delete"/>
+                    </StackPanel>
+                </Button>-->
+
+                <!--Add Button-->
+                <Button Style="{StaticResource addButton}" Name="btnItemAdd" Click="btnItemAdd_Click">
+                    <StackPanel Orientation="Horizontal">
+                        <Icon:PackIconMaterial Kind="Plus" VerticalAlignment="Center" Margin="0 1 8 0" Width="11" Height="11"/>
+                        <TextBlock Text="Add"/>
+                    </StackPanel>
+                </Button>
+
+                <!--Seprator-->
+                <Separator Height="1" Grid.Row="3" Background="#DAE2EA" Margin="0 -1 0 10"/>
+
+                <!--Tab buttons-->
+
+                <!--Counter Title-->
+
+                
+                <DataGrid RowStyle="{DynamicResource DataGridRowStyle1}" ColumnHeaderStyle="{DynamicResource DataGridColumnHeaderStyle1}" CellStyle="{DynamicResource DataGridCellStyle1}" x:Name="itemsDataGrid" Style="{DynamicResource DataGridStyle1}">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Item ID" IsReadOnly="True" CanUserResize="False" Width="auto" Binding="{Binding ItemID}"/>
+                        <DataGridTextColumn Header="Item Name" Binding="{Binding ItemName}" IsReadOnly="True" Width="2*"/>
+                        <DataGridTextColumn Header="Category" Binding="{Binding Category}" IsReadOnly="True" Width="*"/>
+                        <DataGridTextColumn Header="Description" Binding="{Binding Description}" IsReadOnly="True" Width="3*"/>
+                        <DataGridTextColumn Header="Quantity" Binding="{Binding Quantity}" IsReadOnly="True" Width="*"/>
+                        <DataGridTextColumn Header="Price" Binding="{Binding Price}" IsReadOnly="True" Width="*"/>
+                        <DataGridTemplateColumn Header="Operations" IsReadOnly="True" Width="auto">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Button x:Name="btnItemsEdit" Click="btnItemEdit_Click" Style="{StaticResource gridEditButton}">
+                                            <Icon:PackIconMaterial Kind="PencilOutline" Style="{StaticResource gridButtonIcon}"/>
+                                        </Button>
+                                        <Button x:Name="btnItemsDelete" Click="btnItemDelete_Click" Margin="5 0 0 0" Style="{StaticResource gridRemoveButton}">
+                                            <Icon:PackIconMaterial Kind="DeleteOutline" Style="{StaticResource gridButtonIcon}"/>
+                                        </Button>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+
+            <!-- Ledger Data Grid-->
+            <Grid Name="gridLedger" Visibility="Hidden" Grid.Column="1" Margin="30,20,20,20">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
+
+                <!--Top Buttons-->
+                <!--<Button Style="{StaticResource topButton}" Margin="0 0 20 0" Background="#dcdcdc">
+                    <Icon:PackIconMaterial Kind="Cog"/>
+                </Button>-->
+
+                <!--<Button Style="{StaticResource topButton}" Margin="0 0 55 0">
+                    <Icon:PackIconMaterial Kind="Bell"/>
+                </Button>-->
+
+                <!--Page Title-->
+                <TextBlock Text="Ledger" Grid.Row="1" FontSize="32" FontWeight="SemiBold" Margin="0 20 0 0" Foreground="#dcdcdc" HorizontalAlignment="Left"/>
+
+                <!--Add Button
+                <Button x:Name="btnAdd" Style="{StaticResource addButton}" Click="btnAdd_Click" Margin="0,24,0,4" Grid.Row="1" HorizontalAlignment="Center">
+                    <StackPanel Orientation="Horizontal">
+                        <Icon:PackIconMaterial Kind="Plus" VerticalAlignment="Center" Margin="0 1 8 0" Width="11" Height="11"/>
+                        <TextBlock Text="Add"/>
+                    </StackPanel>
+                </Button>-->
+
+                <!--Refresh Button-->
+                <Button Style="{StaticResource addButton}" Name="btnLedgerRefresh" Click="btnLedgerRefresh_Click" Margin="0,24,164,4" Grid.Row="1">
+                    <StackPanel Orientation="Horizontal">
+                        <Icon:PackIconMaterial Kind="Refresh" VerticalAlignment="Center" Margin="0 1 8 0" Width="11" Height="11"/>
+                        <TextBlock Text="Refresh"/>
+                    </StackPanel>
+                </Button>
+
+                <!--Delete Button
+                <Button Style="{StaticResource addButton}" Click="btnDelete_Click">
+                    <StackPanel Orientation="Horizontal">
+                        <Icon:PackIconMaterial Kind="Plus" VerticalAlignment="Center" Margin="0 1 8 0" Width="11" Height="11"/>
+                        <TextBlock Text="Delete"/>
+                    </StackPanel>
+                </Button>-->
+
+                <!--Add Button-->
+                <Button Style="{StaticResource addButton}" Name="btnLedgerAdd" Click="btnLedgerAdd_Click">
+                    <StackPanel Orientation="Horizontal">
+                        <Icon:PackIconMaterial Kind="Plus" VerticalAlignment="Center" Margin="0 1 8 0" Width="11" Height="11"/>
+                        <TextBlock Text="Add"/>
+                    </StackPanel>
+                </Button>
+
+                <!--Seprator-->
+                <Separator Height="1" Grid.Row="3" Background="#DAE2EA" Margin="0 -1 0 10"/>
+
+                <!--Tab buttons-->
+
+                <!--Counter Title-->
+
+                <DataGrid RowStyle="{DynamicResource DataGridRowStyle1}" ColumnHeaderStyle="{DynamicResource DataGridColumnHeaderStyle1}" CellStyle="{DynamicResource DataGridCellStyle1}" x:Name="ledgerDataGrid" Style="{DynamicResource DataGridStyle1}">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Transaction ID" IsReadOnly="True" CanUserResize="False" Width="auto" Binding="{Binding transaction_id}"/>
+                        <DataGridTextColumn Header="Item ID" Binding="{Binding item_id}" IsReadOnly="True" Width="*"/>
+                        <DataGridTextColumn Header="Date" Binding="{Binding datetime}" IsReadOnly="True" Width="2*"/>
+                        <DataGridTextColumn Header="Type" Binding="{Binding transaction_type}" IsReadOnly="True" Width="*"/>
+                        <DataGridTextColumn Header="Customer ID" Binding="{Binding customer_id}" IsReadOnly="True" Width="*"/>
+                        <DataGridTextColumn Header="Supplier ID" Binding="{Binding supplier_id}" IsReadOnly="True" Width="*"/>
+                        <DataGridTextColumn Header="Qty" Binding="{Binding total_qty}" IsReadOnly="True" Width="*"/>
+                        <DataGridTextColumn Header="Total" Binding="{Binding total_price}" IsReadOnly="True" Width="*"/>
+                        <DataGridTemplateColumn Header="Operations" IsReadOnly="True" Width="auto">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal">
+                                        <!-- 
+                                        <Button x:Name="btnItemsEdit" Click="btnLedgerEdit_Click" Style="{StaticResource gridEditButton}">
+                                            <Icon:PackIconMaterial Kind="PencilOutline" Style="{StaticResource gridButtonIcon}"/>
+                                        </Button> -->
+                                        <Button x:Name="btnItemsDelete" Click="btnLedgerDelete_Click" Margin="5 0 0 0" Style="{StaticResource gridRemoveButton}">
+                                            <Icon:PackIconMaterial Kind="DeleteOutline" Style="{StaticResource gridButtonIcon}"/>
+                                        </Button>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+
+            <!--Suppliers Data Grid-->
+            <Grid Name="gridSuppliers" Visibility="Hidden" Grid.Column="1" Margin="30,20,20,20">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
+
+                <!--Page Title-->
+                <TextBlock Text="Suppliers" Grid.Row="1" FontSize="32" FontWeight="SemiBold" Margin="0 20 0 0" Foreground="#dcdcdc" HorizontalAlignment="Left"/>
+
+                <!--Add Button
+                <Button x:Name="btnAdd" Style="{StaticResource addButton}" Click="btnAdd_Click" Margin="0,24,0,4" Grid.Row="1" HorizontalAlignment="Center">
+                    <StackPanel Orientation="Horizontal">
+                        <Icon:PackIconMaterial Kind="Plus" VerticalAlignment="Center" Margin="0 1 8 0" Width="11" Height="11"/>
+                        <TextBlock Text="Add"/>
+                    </StackPanel>
+                </Button>-->
+
+                <!--Refresh Button-->
+                <Button Style="{StaticResource addButton}" Name="btnSupplierRefresh" Click="btnSupplierRefresh_Click" Margin="0,24,164,4" Grid.Row="1">
+                    <StackPanel Orientation="Horizontal">
+                        <Icon:PackIconMaterial Kind="Refresh" VerticalAlignment="Center" Margin="0 1 8 0" Width="11" Height="11"/>
+                        <TextBlock Text="Refresh"/>
+                    </StackPanel>
+                </Button>
+
+                <!--Delete Button
+                <Button Style="{StaticResource addButton}" Click="btnDelete_Click">
+                    <StackPanel Orientation="Horizontal">
+                        <Icon:PackIconMaterial Kind="Plus" VerticalAlignment="Center" Margin="0 1 8 0" Width="11" Height="11"/>
+                        <TextBlock Text="Delete"/>
+                    </StackPanel>
+                </Button>-->
+
+                <!--Add Button-->
+                <Button Style="{StaticResource addButton}" Name="btnSupplierAdd" Click="btnSupplierAdd_Click">
+                    <StackPanel Orientation="Horizontal">
+                        <Icon:PackIconMaterial Kind="Plus" VerticalAlignment="Center" Margin="0 1 8 0" Width="11" Height="11"/>
+                        <TextBlock Text="Add"/>
+                    </StackPanel>
+                </Button>
+
+                <!--Seprator-->
+                <Separator Height="1" Grid.Row="3" Background="#DAE2EA" Margin="0 -1 0 10"/>
+
+                
+                <DataGrid RowStyle="{DynamicResource DataGridRowStyle1}" ColumnHeaderStyle="{DynamicResource DataGridColumnHeaderStyle1}" CellStyle="{DynamicResource DataGridCellStyle1}" x:Name="suppliersDataGrid" Style="{DynamicResource DataGridStyle1}">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Supplier ID" IsReadOnly="True" CanUserResize="False" Width="auto" Binding="{Binding SupplierID}"/>
+                        <DataGridTextColumn Header="Full Name" Binding="{Binding FullName}" IsReadOnly="True" Width="*"/>
+                        <DataGridTextColumn Header="Email Address" Binding="{Binding Email}" IsReadOnly="True" Width="*"/>
+                        <DataGridTextColumn Header="Contact Number" Binding="{Binding ContactNo}" IsReadOnly="True" Width="*"/>
+                        <DataGridTemplateColumn Header="Operations" IsReadOnly="True" Width="auto">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Button x:Name="btnSuppliersEdit" Click="btnSupplierEdit_Click" Style="{StaticResource gridEditButton}">
+                                            <Icon:PackIconMaterial Kind="PencilOutline" Style="{StaticResource gridButtonIcon}"/>
+                                        </Button>
+                                        <Button x:Name="btnSuppliersDelete" Click="btnSupplierDelete_Click" Margin="5 0 0 0" Style="{StaticResource gridRemoveButton}">
+                                            <Icon:PackIconMaterial Kind="DeleteOutline" Style="{StaticResource gridButtonIcon}"/>
+                                        </Button>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+
+            <Grid Name="gridCustomers" Visibility="Hidden" Grid.Column="1" Margin="30,20,20,20">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
+
+                <!--Top Buttons-->
+                <!--<Button Style="{StaticResource topButton}" Margin="0 0 20 0" Background="#dcdcdc">
+                    <Icon:PackIconMaterial Kind="Cog"/>
+                </Button>-->
+
+                <!--<Button Style="{StaticResource topButton}" Margin="0 0 55 0">
+                    <Icon:PackIconMaterial Kind="Bell"/>
+                </Button>-->
+
+                <!--Page Title-->
+                <TextBlock Text="Customers" Grid.Row="1" FontSize="32" FontWeight="SemiBold" Margin="0 20 0 0" Foreground="#dcdcdc" HorizontalAlignment="Left"/>
+
+                <!--Add Button
+                <Button x:Name="btnAdd" Style="{StaticResource addButton}" Click="btnAdd_Click" Margin="0,24,0,4" Grid.Row="1" HorizontalAlignment="Center">
+                    <StackPanel Orientation="Horizontal">
+                        <Icon:PackIconMaterial Kind="Plus" VerticalAlignment="Center" Margin="0 1 8 0" Width="11" Height="11"/>
+                        <TextBlock Text="Add"/>
+                    </StackPanel>
+                </Button>-->
+
+                <!--Refresh Button-->
+                <Button Style="{StaticResource addButton}" Name="btnCustomerRefresh" Click="btnCustomerRefresh_Click" Margin="0,24,164,4" Grid.Row="1">
+                    <StackPanel Orientation="Horizontal">
+                        <Icon:PackIconMaterial Kind="Refresh" VerticalAlignment="Center" Margin="0 1 8 0" Width="11" Height="11"/>
+                        <TextBlock Text="Refresh"/>
+                    </StackPanel>
+                </Button>
+
+                <!--Delete Button
+                <Button Style="{StaticResource addButton}" Click="btnDelete_Click">
+                    <StackPanel Orientation="Horizontal">
+                        <Icon:PackIconMaterial Kind="Plus" VerticalAlignment="Center" Margin="0 1 8 0" Width="11" Height="11"/>
+                        <TextBlock Text="Delete"/>
+                    </StackPanel>
+                </Button>-->
+
+                <!--Add Button-->
+                <Button Style="{StaticResource addButton}" Name="btnCustomerAdd"  Click="btnCustomerAdd_Click">
+                    <StackPanel Orientation="Horizontal">
+                        <Icon:PackIconMaterial Kind="Plus" VerticalAlignment="Center" Margin="0 1 8 0" Width="11" Height="11"/>
+                        <TextBlock Text="Add"/>
+                    </StackPanel>
+                </Button>
+
+                <!--Seprator-->
+                <Separator Height="1" Grid.Row="3" Background="#DAE2EA" Margin="0 -1 0 10"/>
+
+                <!--Customers Data Grid-->
+                <DataGrid RowStyle="{DynamicResource DataGridRowStyle1}" ColumnHeaderStyle="{DynamicResource DataGridColumnHeaderStyle1}" CellStyle="{DynamicResource DataGridCellStyle1}" x:Name="customersDataGrid" Style="{DynamicResource DataGridStyle1}">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Customer ID" IsReadOnly="True" CanUserResize="False" Width="auto" Binding="{Binding CustomerID}"/>
+                        <DataGridTextColumn Header="Full Name" Binding="{Binding FullName}" IsReadOnly="True" Width="*"/>
+                        <DataGridTextColumn Header="Email Address" Binding="{Binding Email}" IsReadOnly="True" Width="*"/>
+                        <DataGridTextColumn Header="Contact Number" Binding="{Binding ContactNo}" IsReadOnly="True" Width="*"/>
+                        <DataGridTemplateColumn Header="Operations" IsReadOnly="True" Width="auto">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Button x:Name="btnEdit" Click="btnCustomerEdit_Click" Style="{StaticResource gridEditButton}">
+                                            <Icon:PackIconMaterial Kind="PencilOutline" Style="{StaticResource gridButtonIcon}"/>
+                                        </Button>
+                                        <Button x:Name="btnDelete" Click="btnCustomerDelete_Click" Margin="5 0 0 0" Style="{StaticResource gridRemoveButton}">
+                                            <Icon:PackIconMaterial Kind="DeleteOutline" Style="{StaticResource gridButtonIcon}"/>
+                                        </Button>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+
+            </Grid>
+
+        </Grid>
+    </Border>
+</Window>
