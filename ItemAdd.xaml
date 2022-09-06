@@ -20,13 +20,13 @@
             <RowDefinition Height="1*"/>
             <RowDefinition Height="1*"/>
             <RowDefinition Height="1*"/>
-            <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
+        
         <!-- BUTTONS SECTION -->
 
-        <Button x:Name="AddBtn" Content="Add" Click="btnAdd_Click" Height="20" Width="75" Grid.ColumnSpan="2" Grid.Column="0" Grid.Row="6" />
+        <Button x:Name="btnAdd" Content="Add" Click="btnAdd_Click" Height="20" Width="75" Grid.ColumnSpan="2" Grid.Column="0" Grid.Row="5" />
 
-        <Button x:Name="CloseBtn" Content="Close" Click="btnClose_Click" Height="20" Width="75" Grid.ColumnSpan="2" Grid.Column="1" Grid.Row="6" />
+        <Button x:Name="btnClose" Content="Close" Click="btnClose_Click" Height="20" Width="75" Grid.ColumnSpan="2" Grid.Column="1" Grid.Row="5" />
 
         <!-- TEXTBOX SECTION -->
 
@@ -38,11 +38,9 @@
 
         <TextBox x:Name="tbItemCategory" Grid.ColumnSpan="2" Grid.Column="1" Grid.Row="1" TextWrapping="Wrap" Height="25"  Width="175" HorizontalAlignment="Center"  VerticalAlignment="Center"/>
 
-        <TextBox x:Name="tbItemQty" Grid.ColumnSpan="2" Grid.Column="1" Grid.Row="2"  HorizontalAlignment="Center"  VerticalAlignment="Center" TextWrapping="Wrap" Height="25" Width="175"/>
+        <TextBox x:Name="tbItemPrice" Grid.ColumnSpan="2" Grid.Column="1" Grid.Row="2" TextWrapping="Wrap" HorizontalAlignment="Center" VerticalAlignment="Center" Height="25" Width="175"/>
 
-        <TextBox x:Name="tbItemPrice" Grid.ColumnSpan="2" Grid.Column="1" Grid.Row="3" TextWrapping="Wrap" HorizontalAlignment="Center" VerticalAlignment="Center" Height="25" Width="175"/>
-
-        <TextBox x:Name="tbItemDescription" Grid.ColumnSpan="2" Grid.RowSpan="2" Grid.Column="1" Grid.Row="4" TextWrapping="Wrap" HorizontalAlignment="Center"  VerticalAlignment="Center" Width="175" Height="60"/>
+        <TextBox x:Name="tbItemDescription" Grid.ColumnSpan="2" Grid.RowSpan="2" Grid.Column="1" Grid.Row="3" TextWrapping="Wrap" HorizontalAlignment="Center"  VerticalAlignment="Center" Width="175" Height="60"/>
 
         <!-- LABEL SECTION -->
            
@@ -53,11 +51,9 @@
         <Label Content="Item Name :" Grid.Column="0" Grid.Row="0" HorizontalAlignment="Center"  VerticalAlignment="Center" Foreground="White"/>
 
         <Label Content="Category :" Grid.Column="0" Grid.Row="1"  HorizontalAlignment="Center"  VerticalAlignment="Center" Foreground="White"/>
+        
+        <Label Content="Price :" Grid.Column="0" Grid.Row="2"  HorizontalAlignment="Center"  VerticalAlignment="Center" Foreground="White"/>
 
-        <Label Content="Quantity :" Grid.Column="0" Grid.Row="2"  HorizontalAlignment="Center"  VerticalAlignment="Center" Foreground="White"/>
-
-        <Label Content="Price :" Grid.Column="0" Grid.Row="3"  HorizontalAlignment="Center"  VerticalAlignment="Center" Foreground="White"/>
-
-        <Label Content="Description :" Grid.Column="0" Grid.Row="4"  HorizontalAlignment="Center"  VerticalAlignment="Center" Foreground="White"/>
+        <Label Content="Description :" Grid.Column="0" Grid.Row="3"  HorizontalAlignment="Center"  VerticalAlignment="Center" Foreground="White"/>
     </Grid>
 </Window>

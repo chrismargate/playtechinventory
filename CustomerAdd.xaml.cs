@@ -75,7 +75,6 @@ namespace PlayTechInventory
 
                 MessageBox.Show("You have successfully added a supplier!", "Supplier Added");
                 this.Close();
-                clearTextBoxes();
             }
             catch (FormatException fe)
             {

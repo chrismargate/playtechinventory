@@ -12,6 +12,7 @@ using System.Windows.Shapes;
 using System.Collections.ObjectModel;
 using System.Collections;
 using MySql.Data.MySqlClient;
+using System.Data.SqlTypes;
 
 namespace PlayTechInventory
 {
@@ -236,43 +237,6 @@ namespace PlayTechInventory
             itemAdd.Show();
         }
 
-        private void btnItemEdit_Click(object sender, RoutedEventArgs e)
-        {
-            Item sampleItem = (Item)itemsDataGrid.SelectedItem;
-            ItemEdit itemEdit = new ItemEdit(sampleItem.ItemID);
-            itemEdit.Show();
-
-        }
-
-        public void btnItemDelete_Click(object sender, RoutedEventArgs e)
-        {
-
-            string connectionString = String.Format("SERVER={0};DATABASE={1};UID={2};PASSWORD={3};", DBSERVER, DBNAME, DBUSER, DBPASS);
-            MySqlConnection conn = new MySqlConnection(connectionString);
-            conn.Open();
-
-            MessageBoxResult dialogResult = MessageBox.Show("Are you sure you want to delete this record?", "Delete Record", MessageBoxButton.YesNo);
-
-            if (dialogResult == MessageBoxResult.Yes)
-            {
-                Item sampleItem = (Item)itemsDataGrid.SelectedItem;
-                MySqlCommand cmd = new MySqlCommand("DELETE FROM items_t WHERE item_id=@item_id", conn);
-                cmd.Parameters.AddWithValue("@item_id",sampleItem.ItemID);
-                cmd.ExecuteNonQuery();
-
-            }
-            else if (dialogResult == MessageBoxResult.No)
-            {
-                return;
-            }
-
-            conn.Close();
-
-            MessageBox.Show("You have successfully deleted a record!");
-
-            btnItems_Click(new object(),new RoutedEventArgs());
-        }
-
         private void populateLedgerDataGrid()
         {
             ObservableCollection<Transaction> transactions = new ObservableCollection<Transaction>();
@@ -280,13 +244,58 @@ namespace PlayTechInventory
             string connectionString = String.Format("SERVER={0};DATABASE={1};UID={2};PASSWORD={3};", DBSERVER, DBNAME, DBUSER, DBPASS);
             MySqlConnection conn = new MySqlConnection(connectionString);
             conn.Open();
-            MySqlCommand cmd = new MySqlCommand("SELECT * FROM transactions_T", conn);
-            MySqlDataReader reader = cmd.ExecuteReader();
+            MySqlCommand transactionsCmd = new MySqlCommand("SELECT * FROM transactions_T", conn);
+            MySqlCommand itemsCmd = new MySqlCommand("SELECT item_name FROM items_T WHERE item_id=@item_id", conn);
+            MySqlCommand customersCmd = new MySqlCommand("SELECT fullname FROM customers_t WHERE customer_id=@customer_id", conn);
+            MySqlCommand suppliersCmd = new MySqlCommand("SELECT fullname FROM suppliers_t WHERE supplier_id=@supplier_id", conn);
+            MySqlDataReader reader = transactionsCmd.ExecuteReader();
 
             int counter = 0;
+            int item_id = 0;
+            int tempSupplierID = 0;
+            int tempCustomerID = 0;
             while (reader.Read())
             {
-                transactions.Add(new Transaction { transaction_id = reader.GetInt32("transaction_id"), item_id = reader.GetInt32("item_id"), datetime = reader.GetString("transaction_date"), transaction_type = reader.GetString("transaction_type"), customer_id = reader.GetInt32("customer_id"), supplier_id = reader.GetInt32("supplier_id"), description = reader.GetString("description"), total_qty = reader.GetInt32("total_qty"), total_price = reader.GetDouble("total_price")});
+                try
+                {
+                    /*
+                    if (reader.GetInt32("customer_id") == null)
+                    {
+                        tempCustomerID = 0;
+                    }
+                    else
+                    {
+                        tempCustomerID = reader.GetInt32("customer_id");
+                    }
+                    */
+                    tempCustomerID = reader.GetInt32("customer_id");
+                }
+                catch (SqlNullValueException snve)
+                {
+                    tempCustomerID = 0;
+                }
+
+                try
+                {
+                    /*
+                    if (reader.GetInt32("supplier_id") == null)
+                    {
+                        tempSupplierID = 0;
+                    }
+                    else
+                    {
+                        tempSupplierID = reader.GetInt32("supplier_id");
+                    }
+                    */
+
+                    tempSupplierID = reader.GetInt32("supplier_id");
+                }
+                catch (SqlNullValueException snve)
+                {
+                    tempSupplierID = 0;
+                }
+
+                transactions.Add(new Transaction { transaction_id = reader.GetInt32("transaction_id"), item_id = reader.GetInt32("item_id"), datetime = reader.GetString("transaction_date"), transaction_type = reader.GetString("transaction_type"), customer_id = tempCustomerID, supplier_id = tempSupplierID, description = reader.GetString("description"), total_qty = reader.GetInt32("total_qty"), total_price = reader.GetDouble("total_price")});
                 counter++;
             }
 
@@ -314,6 +323,70 @@ namespace PlayTechInventory
             TransactionAdd transactionAdd = new TransactionAdd();
             transactionAdd.Show();
         }
+
+        private bool updateItem()
+        {
+            Transaction sampleTransaction = (Transaction)ledgerDataGrid.SelectedItem;
+            int item_id = sampleTransaction.item_id;
+
+            string connectionString = String.Format("SERVER={0};DATABASE={1};UID={2};PASSWORD={3};", DBSERVER, DBNAME, DBUSER, DBPASS);
+            MySqlConnection conn = new MySqlConnection(connectionString);
+            conn.Open();
+
+            string findItemQuantity = "SELECT quantity FROM items_t WHERE item_id=@item_id";
+            MySqlCommand qtyCmd = new MySqlCommand(findItemQuantity, conn);
+            qtyCmd.Parameters.AddWithValue("@item_id", item_id);
+            MySqlDataReader reader = qtyCmd.ExecuteReader();
+            reader.Read();
+
+            int previousQuantity = reader.GetInt32("quantity");
+
+
+            conn.Close();
+
+            try
+            {
+
+                conn.Open();
+
+                int plusminusQuantity = sampleTransaction.total_qty;
+
+                int newQuantity;
+
+                if (sampleTransaction.transaction_type == "PURCHASE")
+                {
+                    newQuantity = previousQuantity - plusminusQuantity;
+                }
+                else
+                {
+                    newQuantity = previousQuantity + plusminusQuantity;
+                }
+
+                MySqlCommand cmd = new MySqlCommand("UPDATE items_T SET quantity=@quantity WHERE item_id=@item_id", conn);
+
+                cmd.Parameters.AddWithValue("@item_id", item_id);
+                cmd.Parameters.AddWithValue("@quantity", newQuantity);
+
+                cmd.ExecuteNonQuery();
+                return true;
+
+            }
+            catch (FormatException fe)
+            {
+                MessageBox.Show("Oops! You have entered a letter on either the quantity. Please try again!", "Incorrect Input");
+                return false;
+            }
+            catch (Exception ex)
+            {
+                // MessageBox.Show(String.Format("{0}", ex));
+                return false;
+            }
+
+            finally
+            {
+                conn.Close();
+            }
+        }
         private void btnLedgerDelete_Click(object sender, RoutedEventArgs e)
         {
             string connectionString = String.Format("SERVER={0};DATABASE={1};UID={2};PASSWORD={3};", DBSERVER, DBNAME, DBUSER, DBPASS);
@@ -337,7 +410,24 @@ namespace PlayTechInventory
 
             conn.Close();
 
-            MessageBox.Show("You have successfully deleted a record!");
+            conn.Open();
+
+            if (dialogResult == MessageBoxResult.Yes)
+            {
+                /*
+                Transaction sampleTransaction1 = (Transaction)ledgerDataGrid.SelectedItem;
+                int itemid = sampleTransaction1.item_id;
+                MySqlCommand updateCmd = new MySqlCommand("UPDATE items_t SET quantity=@quantity WHERE item_id=@item_id", conn);
+                updateCmd.Parameters.AddWithValue("@quantity", 0);
+                updateCmd.Parameters.AddWithValue("@item_id", itemid);
+                updateCmd.ExecuteNonQuery();
+                */
+                updateItem();
+            }
+
+            conn.Close();
+
+            MessageBox.Show("You have successfully deleted a transaction!");
 
             btnLedger_Click(new object(), new RoutedEventArgs());
         }
@@ -352,42 +442,6 @@ namespace PlayTechInventory
             SupplierAdd supplierAdd = new SupplierAdd();
             supplierAdd.Show();
         }
-
-        private void btnSupplierEdit_Click(object sender, RoutedEventArgs e)
-        {
-            Supplier sampleSupplier = (Supplier)suppliersDataGrid.SelectedItem;
-            SupplierEdit supplierEdit = new SupplierEdit(sampleSupplier.SupplierID);
-            supplierEdit.Show();
-        }
-        private void btnSupplierDelete_Click(object sender, RoutedEventArgs e)
-        {
-
-            string connectionString = String.Format("SERVER={0};DATABASE={1};UID={2};PASSWORD={3};", DBSERVER, DBNAME, DBUSER, DBPASS);
-            MySqlConnection conn = new MySqlConnection(connectionString);
-            conn.Open();
-
-            MessageBoxResult dialogResult = MessageBox.Show("Are you sure you want to delete this record?", "Delete Record", MessageBoxButton.YesNo);
-
-            if (dialogResult == MessageBoxResult.Yes)
-            {
-                Supplier sampleSupplier = (Supplier)suppliersDataGrid.SelectedItem;
-                MySqlCommand cmd = new MySqlCommand("DELETE FROM suppliers_T WHERE supplier_id=@supplier_id", conn);
-                cmd.Parameters.AddWithValue("@supplier_id", sampleSupplier.SupplierID);
-                cmd.ExecuteNonQuery();
-
-            }
-            else if (dialogResult == MessageBoxResult.No)
-            {
-                return;
-            }
-
-            conn.Close();
-
-            MessageBox.Show("You have successfully deleted a record!");
-
-            btnSuppliers_Click(new object(), new RoutedEventArgs());
-        }
-
         private void btnCustomerRefresh_Click(object sender, RoutedEventArgs e)
         {
             btnCustomers_Click(new object(), new RoutedEventArgs());
@@ -397,42 +451,6 @@ namespace PlayTechInventory
         {
             CustomerAdd customerAdd = new CustomerAdd();
             customerAdd.Show();
-        }
-
-
-        private void btnCustomerEdit_Click(object sender, RoutedEventArgs e)
-        {
-            Customer sampleCustomer = (Customer)customersDataGrid.SelectedItem;
-            CustomerEdit customerEdit = new CustomerEdit(sampleCustomer.CustomerID);
-            customerEdit.Show();
-        }
-
-        private void btnCustomerDelete_Click(object sender, RoutedEventArgs e)
-        {
-            string connectionString = String.Format("SERVER={0};DATABASE={1};UID={2};PASSWORD={3};", DBSERVER, DBNAME, DBUSER, DBPASS);
-            MySqlConnection conn = new MySqlConnection(connectionString);
-            conn.Open();
-
-            MessageBoxResult dialogResult = MessageBox.Show("Are you sure you want to delete this record?", "Delete Record", MessageBoxButton.YesNo);
-
-            if (dialogResult == MessageBoxResult.Yes)
-            {
-                Customer sampleCustomer= (Customer)customersDataGrid.SelectedItem;
-                MySqlCommand cmd = new MySqlCommand("DELETE FROM customers_T WHERE customer_id=@customer_id", conn);
-                cmd.Parameters.AddWithValue("@customer_id", sampleCustomer.CustomerID);
-                cmd.ExecuteNonQuery();
-
-            }
-            else if (dialogResult == MessageBoxResult.No)
-            {
-                return;
-            }
-
-            conn.Close();
-
-            MessageBox.Show("You have successfully deleted a record!");
-
-            btnCustomers_Click(new object(), new RoutedEventArgs());
         }
         private void btnLogout_Click(object sender, RoutedEventArgs e)
         {

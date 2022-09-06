@@ -22,34 +22,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="CustomerEdit.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Update="TransactionAdd.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Update="ItemEdit.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Update="SupplierEdit.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
 
   <ItemGroup>
-    <Page Update="CustomerEdit.xaml">
-      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Update="TransactionAdd.xaml">
-      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Update="ItemEdit.xaml">
-      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Update="SupplierEdit.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
       <SubType>Designer</SubType>
     </Page>

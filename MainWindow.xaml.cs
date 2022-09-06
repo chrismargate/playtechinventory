@@ -20,7 +20,6 @@ namespace PlayTechInventory
 {
     public partial class MainWindow : Window
     {
-
         private const string DBSERVER = "localhost";
         private const string DBNAME = "db.playtech";
         private const string DBUSER = "chris";
@@ -28,6 +27,7 @@ namespace PlayTechInventory
         public MainWindow()
         {
             InitializeComponent();
+
         }
 
         public void btnLogin_Click(object sender, RoutedEventArgs e)
@@ -68,7 +68,7 @@ namespace PlayTechInventory
             {
                 conn.Close();
             }
-            
+
         }
 
         public void btnExit_Click(object sender, RoutedEventArgs e)

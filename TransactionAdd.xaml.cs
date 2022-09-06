@@ -27,11 +27,192 @@ namespace PlayTechInventory
         private const string DBUSER = "chris";
         private const string DBPASS = "12345";
         public string[] transaction_types { get; set; }
+        public List<String> itemOptions { get; set; }
+        public List<String> customerOptions { get; set; }
+        public List<String> supplierOptions { get; set; }
+
         public TransactionAdd()
         {
             InitializeComponent();
+            populateItemOptions();
+            populateCustomerOptions();
+            populateSupplierOptions();
             transaction_types = new string[] { "PURCHASE", "SALE" };
             DataContext = this;
+        }
+
+        private void populateItemOptions()
+        {
+
+            List<String> tempItemsOptions = new List<String>();
+            
+            string connectionString = String.Format("SERVER={0};DATABASE={1};UID={2};PASSWORD={3};", DBSERVER, DBNAME, DBUSER, DBPASS);
+            MySqlConnection conn = new MySqlConnection(connectionString);
+
+            try
+            {
+                if (conn.State == ConnectionState.Closed)
+                    conn.Open();
+
+                MySqlCommand cmd = new MySqlCommand("SELECT * FROM items_t", conn);
+                MySqlDataReader reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    tempItemsOptions.Add(String.Format("{0} - {1}",reader.GetString("item_id"),reader.GetString("item_name")));
+                }
+
+                itemOptions = tempItemsOptions;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(String.Format("{0}",ex));
+            }
+            finally
+            {
+                conn.Close();
+            }
+        }
+
+        private void populateCustomerOptions()
+        {
+
+            List<String> tempCustomerOptions = new List<String>();
+
+            string connectionString = String.Format("SERVER={0};DATABASE={1};UID={2};PASSWORD={3};", DBSERVER, DBNAME, DBUSER, DBPASS);
+            MySqlConnection conn = new MySqlConnection(connectionString);
+
+            try
+            {
+                if (conn.State == ConnectionState.Closed)
+                    conn.Open();
+
+                MySqlCommand cmd = new MySqlCommand("SELECT * FROM customers_t", conn);
+                MySqlDataReader reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    tempCustomerOptions.Add(String.Format("{0} - {1}", reader.GetString("customer_id"), reader.GetString("fullname")));
+                }
+
+                customerOptions = tempCustomerOptions;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(String.Format("{0}", ex));
+            }
+            finally
+            {
+                conn.Close();
+            }
+        }
+
+        private void populateSupplierOptions()
+        {
+            List<String> tempSupplierOptions = new List<String>();
+
+            string connectionString = String.Format("SERVER={0};DATABASE={1};UID={2};PASSWORD={3};", DBSERVER, DBNAME, DBUSER, DBPASS);
+            MySqlConnection conn = new MySqlConnection(connectionString);
+
+            try
+            {
+                if (conn.State == ConnectionState.Closed)
+                    conn.Open();
+
+                MySqlCommand cmd = new MySqlCommand("SELECT * FROM suppliers_t", conn);
+                MySqlDataReader reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    tempSupplierOptions.Add(String.Format("{0} - {1}", reader.GetString("supplier_id"), reader.GetString("fullname")));
+                }
+
+                supplierOptions = tempSupplierOptions;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(String.Format("{0}", ex));
+            }
+            finally
+            {
+                conn.Close();
+            }
+        }
+
+        private bool updateItem()
+        {
+            int item_id = Convert.ToInt32(cbItem.SelectedItem.ToString().Split(' ')[0]);
+            string connectionString = String.Format("SERVER={0};DATABASE={1};UID={2};PASSWORD={3};", DBSERVER, DBNAME, DBUSER, DBPASS);
+            MySqlConnection conn = new MySqlConnection(connectionString);
+            conn.Open();
+
+            string findItemQuantity = "SELECT quantity FROM items_t WHERE item_id=@item_id";
+            MySqlCommand qtyCmd = new MySqlCommand(findItemQuantity, conn);
+            qtyCmd.Parameters.AddWithValue("@item_id", item_id);
+            MySqlDataReader reader = qtyCmd.ExecuteReader();
+            reader.Read();
+
+            int previousQuantity = reader.GetInt32("quantity");
+
+
+            conn.Close();
+
+            try
+            {
+
+                conn.Open();
+
+                int inputQuantity = Convert.ToInt32(tbQuantity.Text);
+
+                if (inputQuantity <= 0)
+                {
+                    MessageBox.Show("Please enter a quantity greater than 0");
+                    throw new Exception();
+                }
+
+                int newQuantity;
+
+                if (cbTransactionType.SelectedItem.ToString() == "PURCHASE")
+                {
+                    newQuantity = previousQuantity + inputQuantity;
+                }
+                else
+                {
+                    newQuantity = previousQuantity - inputQuantity;
+                    if (newQuantity < 0)
+                    {
+                        MessageBox.Show("Insufficient remaining quantity. Please try again!");
+                        throw new Exception();
+                    }
+                }
+                
+                MySqlCommand cmd = new MySqlCommand("UPDATE items_T SET quantity=@quantity WHERE item_id=@item_id", conn);
+
+                cmd.Parameters.AddWithValue("@item_id", item_id);
+                cmd.Parameters.AddWithValue("@quantity", newQuantity);
+
+                cmd.ExecuteNonQuery();
+                MessageBox.Show("You have successfully added a transaction!", "Transaction Added");
+                return true;
+                this.Close();
+
+            }
+            catch (FormatException fe)
+            {
+                MessageBox.Show("Oops! You have entered a letter on either the quantity. Please try again!", "Incorrect Input");
+                return false;
+            }
+            catch (Exception ex)
+            {
+                // MessageBox.Show(String.Format("{0}", ex));
+                return false;
+            }
+
+            finally
+            {
+                conn.Close();
+            }
+            
         }
 
         private void btnAdd_Click(object sender, RoutedEventArgs e)
@@ -48,10 +229,10 @@ namespace PlayTechInventory
                 string findCustomerQuery = "SELECT COUNT(*) FROM customers_T WHERE customer_id=@customer_id";
                 string findSupplierQuery = "SELECT COUNT(*) FROM suppliers_T WHERE supplier_id=@supplier_id";
 
-                int item_id = Convert.ToInt32(tbItemID.Text);
-                string transaction_type = comboBox1.SelectedItem.ToString();
-                int customer_id = 0;
-                int supplier_id = 0;
+                int item_id = Convert.ToInt32(cbItem.SelectedItem.ToString().Split(' ')[0]);
+                string transaction_type = cbTransactionType.SelectedItem.ToString();
+                int? customer_id = 0;
+                int? supplier_id = 0;
 
                 MySqlCommand findItemCommand = new MySqlCommand(findItemQuery, conn);
                 findItemCommand.Parameters.AddWithValue("@item_id", item_id);
@@ -67,8 +248,9 @@ namespace PlayTechInventory
 
                 if (transaction_type == "PURCHASE")
                 {
-                    supplier_id = Convert.ToInt32(tbSupplierID.Text);
-                    customer_id = 0;
+                    // supplier_id = Convert.ToInt32(tbSupplierID.Text);
+                    supplier_id = Convert.ToInt32(cbSupplier.SelectedItem.ToString().Split(' ')[0]);
+                    customer_id = null;
                     MySqlCommand findSupplierCommand = new MySqlCommand(findSupplierQuery, conn);
                     findSupplierCommand.Parameters.AddWithValue("@supplier_id", supplier_id);
                     MySqlDataReader supplierReader = findSupplierCommand.ExecuteReader();
@@ -83,8 +265,9 @@ namespace PlayTechInventory
                 }
                 else
                 {
-                    customer_id = Convert.ToInt32(tbCustomerID.Text);
-                    supplier_id = 0;
+                    //customer_id = Convert.ToInt32(tbCustomerID.Text);
+                    customer_id = Convert.ToInt32(cbCustomer.SelectedItem.ToString().Split(' ')[0]);
+                    supplier_id = null;
                     MySqlCommand findCustomerCommand = new MySqlCommand(findCustomerQuery, conn);
                     findCustomerCommand.Parameters.AddWithValue("@customer_id", customer_id);
                     MySqlDataReader customerReader = findCustomerCommand.ExecuteReader();
@@ -123,10 +306,13 @@ namespace PlayTechInventory
                 insertCommand.Parameters.AddWithValue("@description", description);
                 insertCommand.Parameters.AddWithValue("@total_qty", quantity);
                 insertCommand.Parameters.AddWithValue("@total_price", price);
-                insertCommand.ExecuteNonQuery();
+                // MessageBox.Show(insertCommand.ToString());
 
-                MessageBox.Show("You have successfully added a transaction!", "Transaction Added");
-                this.Close();
+                if (updateItem() == true)
+                {
+                    insertCommand.ExecuteNonQuery();
+                    this.Close();
+                }
                 // clearTextBoxes();
             }
             catch (FormatException fe)
@@ -135,7 +321,7 @@ namespace PlayTechInventory
             }
             catch (Exception ex)
             {
-                //MessageBox.Show(String.Format("{0}", ex));
+                MessageBox.Show(String.Format("{0}", ex));
             }
             finally
             {
@@ -145,9 +331,6 @@ namespace PlayTechInventory
 
         private void clearTextBoxes()
         {
-            tbItemID.Text = "";
-            tbCustomerID.Text = "";
-            tbSupplierID.Text = "";
             tbQuantity.Text = "";
             tbPrice.Text = "";
             tbItemDescription.Text = "";
@@ -158,17 +341,96 @@ namespace PlayTechInventory
             this.Close();
         }
 
-        private void comboBox1_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void btnAddItem_Click(object sender, RoutedEventArgs e)
         {
-            if (comboBox1.SelectedItem.ToString() == "PURCHASE")
+            ItemAdd itemAdd = new ItemAdd();
+            itemAdd.Show();
+            this.Close();
+        }
+
+        private void btnAddCustomer_Click(object sender, RoutedEventArgs e)
+        {
+            CustomerAdd customerAdd = new CustomerAdd();
+            customerAdd.Show();
+            this.Close();
+        }
+
+        private void btnAddSupplier_Click(object sender, RoutedEventArgs e)
+        {
+            SupplierAdd supplierAdd = new SupplierAdd();
+            supplierAdd.Show();
+            this.Close();
+        }
+
+        private void cbItem_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            
+        }
+
+        private void cbTransactionType_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (cbTransactionType.SelectedItem.ToString() == "PURCHASE")
             {
-                tbCustomerID.IsEnabled = false;
-                tbSupplierID.IsEnabled = true;
+                cbCustomer.IsEnabled = false;
+                cbSupplier.IsEnabled = true;
             }
             else
             {
-                tbCustomerID.IsEnabled = true;
-                tbSupplierID.IsEnabled = false;
+                cbCustomer.IsEnabled = true;
+                cbSupplier.IsEnabled = false;
+            }
+        }
+
+        private void cbCustomer_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
+
+        private void cbSupplier_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
+
+        private void tbQuantity_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            string connectionString = String.Format("SERVER={0};DATABASE={1};UID={2};PASSWORD={3};", DBSERVER, DBNAME, DBUSER, DBPASS);
+            MySqlConnection conn = new MySqlConnection(connectionString);
+
+            try
+            {
+                if (conn.State == ConnectionState.Closed)
+                    conn.Open();
+
+                if(tbQuantity.Text == "")
+                {
+                    tbPrice.Text = "";
+                    conn.Close();
+                    return;
+                }else if (cbItem.SelectedItem.ToString() == "")
+                {
+                    conn.Close();
+                    return;
+                }
+
+                int item_id = Convert.ToInt32(cbItem.SelectedItem.ToString().Split(' ')[0]);
+                int quantity = Convert.ToInt32(tbQuantity.Text);
+
+                MySqlCommand findItemPrice = new MySqlCommand("SELECT price FROM items_t WHERE item_id=@item_id", conn);
+                findItemPrice.Parameters.AddWithValue("@item_id", item_id);
+                MySqlDataReader itemReader = findItemPrice.ExecuteReader();
+                itemReader.Read();
+
+                double totalPrice = itemReader.GetDouble("price") * quantity;
+                tbPrice.Text = totalPrice.ToString();
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(String.Format("{0}",ex));
+            }
+            finally
+            {
+                conn.Close();
             }
         }
     }

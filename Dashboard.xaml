@@ -125,8 +125,10 @@
                     </StackPanel>
                 </Button>-->
 
-                <!--Refresh Button-->
-                <Button Style="{StaticResource addButton}" Name="btnItemRefresh" Click="btnItemRefresh_Click" Margin="0,24,164,4" Grid.Row="1">
+                <!--Refresh Button
+                Margin="0,24,164,4"
+                -->
+                <Button Style="{StaticResource addButton}" Name="btnItemRefresh" Click="btnItemRefresh_Click" Margin="0,24,0,4" Grid.Row="1">
                     <StackPanel Orientation="Horizontal">
                         <Icon:PackIconMaterial Kind="Refresh" VerticalAlignment="Center" Margin="0 1 8 0" Width="11" Height="11"/>
                         <TextBlock Text="Refresh"/>
@@ -141,13 +143,13 @@
                     </StackPanel>
                 </Button>-->
 
-                <!--Add Button-->
+                <!--Add Button
                 <Button Style="{StaticResource addButton}" Name="btnItemAdd" Click="btnItemAdd_Click">
                     <StackPanel Orientation="Horizontal">
                         <Icon:PackIconMaterial Kind="Plus" VerticalAlignment="Center" Margin="0 1 8 0" Width="11" Height="11"/>
                         <TextBlock Text="Add"/>
                     </StackPanel>
-                </Button>
+                </Button>-->
 
                 <!--Seprator-->
                 <Separator Height="1" Grid.Row="3" Background="#DAE2EA" Margin="0 -1 0 10"/>
@@ -160,11 +162,12 @@
                 <DataGrid RowStyle="{DynamicResource DataGridRowStyle1}" ColumnHeaderStyle="{DynamicResource DataGridColumnHeaderStyle1}" CellStyle="{DynamicResource DataGridCellStyle1}" x:Name="itemsDataGrid" Style="{DynamicResource DataGridStyle1}">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Item ID" IsReadOnly="True" CanUserResize="False" Width="auto" Binding="{Binding ItemID}"/>
-                        <DataGridTextColumn Header="Item Name" Binding="{Binding ItemName}" IsReadOnly="True" Width="2*"/>
+                        <DataGridTextColumn Header="Item Name" Binding="{Binding ItemName}" IsReadOnly="True" Width="3*"/>
                         <DataGridTextColumn Header="Category" Binding="{Binding Category}" IsReadOnly="True" Width="*"/>
-                        <DataGridTextColumn Header="Description" Binding="{Binding Description}" IsReadOnly="True" Width="3*"/>
+                        <DataGridTextColumn Header="Description" Binding="{Binding Description}" IsReadOnly="True" Width="2*"/>
                         <DataGridTextColumn Header="Quantity" Binding="{Binding Quantity}" IsReadOnly="True" Width="*"/>
                         <DataGridTextColumn Header="Price" Binding="{Binding Price}" IsReadOnly="True" Width="*"/>
+                        <!-- 
                         <DataGridTemplateColumn Header="Operations" IsReadOnly="True" Width="auto">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
@@ -178,7 +181,7 @@
                                     </StackPanel>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
+                        </DataGridTemplateColumn> -->
                     </DataGrid.Columns>
                 </DataGrid>
             </Grid>
@@ -299,7 +302,7 @@
                 </Button>-->
 
                 <!--Refresh Button-->
-                <Button Style="{StaticResource addButton}" Name="btnSupplierRefresh" Click="btnSupplierRefresh_Click" Margin="0,24,164,4" Grid.Row="1">
+                <Button Style="{StaticResource addButton}" Name="btnSupplierRefresh" Click="btnSupplierRefresh_Click" Margin="0,24,0,4" Grid.Row="1">
                     <StackPanel Orientation="Horizontal">
                         <Icon:PackIconMaterial Kind="Refresh" VerticalAlignment="Center" Margin="0 1 8 0" Width="11" Height="11"/>
                         <TextBlock Text="Refresh"/>
@@ -314,13 +317,13 @@
                     </StackPanel>
                 </Button>-->
 
-                <!--Add Button-->
+                <!--Add Button
                 <Button Style="{StaticResource addButton}" Name="btnSupplierAdd" Click="btnSupplierAdd_Click">
                     <StackPanel Orientation="Horizontal">
                         <Icon:PackIconMaterial Kind="Plus" VerticalAlignment="Center" Margin="0 1 8 0" Width="11" Height="11"/>
                         <TextBlock Text="Add"/>
                     </StackPanel>
-                </Button>
+                </Button>-->
 
                 <!--Seprator-->
                 <Separator Height="1" Grid.Row="3" Background="#DAE2EA" Margin="0 -1 0 10"/>
@@ -332,6 +335,7 @@
                         <DataGridTextColumn Header="Full Name" Binding="{Binding FullName}" IsReadOnly="True" Width="*"/>
                         <DataGridTextColumn Header="Email Address" Binding="{Binding Email}" IsReadOnly="True" Width="*"/>
                         <DataGridTextColumn Header="Contact Number" Binding="{Binding ContactNo}" IsReadOnly="True" Width="*"/>
+                        <!--
                         <DataGridTemplateColumn Header="Operations" IsReadOnly="True" Width="auto">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
@@ -346,6 +350,7 @@
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
+                        -->
                     </DataGrid.Columns>
                 </DataGrid>
             </Grid>
@@ -382,7 +387,7 @@
                 </Button>-->
 
                 <!--Refresh Button-->
-                <Button Style="{StaticResource addButton}" Name="btnCustomerRefresh" Click="btnCustomerRefresh_Click" Margin="0,24,164,4" Grid.Row="1">
+                <Button Style="{StaticResource addButton}" Name="btnCustomerRefresh" Click="btnCustomerRefresh_Click" Margin="0,24,0,4" Grid.Row="1">
                     <StackPanel Orientation="Horizontal">
                         <Icon:PackIconMaterial Kind="Refresh" VerticalAlignment="Center" Margin="0 1 8 0" Width="11" Height="11"/>
                         <TextBlock Text="Refresh"/>
@@ -397,13 +402,13 @@
                     </StackPanel>
                 </Button>-->
 
-                <!--Add Button-->
+                <!--Add Button
                 <Button Style="{StaticResource addButton}" Name="btnCustomerAdd"  Click="btnCustomerAdd_Click">
                     <StackPanel Orientation="Horizontal">
                         <Icon:PackIconMaterial Kind="Plus" VerticalAlignment="Center" Margin="0 1 8 0" Width="11" Height="11"/>
                         <TextBlock Text="Add"/>
                     </StackPanel>
-                </Button>
+                </Button>-->
 
                 <!--Seprator-->
                 <Separator Height="1" Grid.Row="3" Background="#DAE2EA" Margin="0 -1 0 10"/>
@@ -415,6 +420,7 @@
                         <DataGridTextColumn Header="Full Name" Binding="{Binding FullName}" IsReadOnly="True" Width="*"/>
                         <DataGridTextColumn Header="Email Address" Binding="{Binding Email}" IsReadOnly="True" Width="*"/>
                         <DataGridTextColumn Header="Contact Number" Binding="{Binding ContactNo}" IsReadOnly="True" Width="*"/>
+                        <!--
                         <DataGridTemplateColumn Header="Operations" IsReadOnly="True" Width="auto">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
@@ -429,6 +435,7 @@
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
+                        -->
                     </DataGrid.Columns>
                 </DataGrid>
 

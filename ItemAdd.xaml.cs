@@ -44,7 +44,8 @@ namespace PlayTechInventory
                 string item_name = tbItemName.Text;
                 string category = tbItemCategory.Text;
                 string description = tbItemDescription.Text;
-                int quantity = Convert.ToInt32(tbItemQty.Text);
+                // int quantity = Convert.ToInt32(tbItemQty.Text);
+                int quantity = 0;
                 double price = Convert.ToDouble(tbItemPrice.Text);
 
                 if (item_name.Length > 50)
@@ -64,12 +65,13 @@ namespace PlayTechInventory
                     throw new Exception();
                 }
 
-
+                /*
                 if (quantity <= 0)
                 {
                     MessageBox.Show("Please enter a quantity greater than 0");
                     throw new Exception();
                 }
+                */
 
                 if (price <= 0)
                 {
@@ -89,7 +91,7 @@ namespace PlayTechInventory
                 cmd.ExecuteNonQuery();
 
                 MessageBox.Show("You have successfully added an item!","Item Added");
-                this.Close();
+                btnClose_Click(new object(), new RoutedEventArgs());
                 clearTextBoxes();
             }
             catch (FormatException fe)
@@ -111,12 +113,14 @@ namespace PlayTechInventory
             tbItemName.Text = "";
             tbItemCategory.Text = "";
             tbItemDescription.Text = "";
-            tbItemQty.Text = "";
+            // tbItemQty.Text = "";
             tbItemPrice.Text = "";
         }
 
         private void btnClose_Click(object sender, RoutedEventArgs e)
         {
+            TransactionAdd transactionAdd = new TransactionAdd();
+            transactionAdd.Show();
             this.Close();
         }
 
